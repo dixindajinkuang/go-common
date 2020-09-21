@@ -2,16 +2,13 @@ package httpclient
 
 import (
 	"bytes"
-	"compress/gzip"
 	"context"
 	"crypto/tls"
-	"github.com/dajinkuang/elog"
+	"github.com/dajinkuang/dlog"
 	"github.com/dajinkuang/errors"
 	"github.com/dajinkuang/util"
-	"io"
 	"io/ioutil"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -74,7 +71,7 @@ func (clt *HttpClient) Do(ctx context.Context, request *http.Request) (responseH
 	)
 	if resp == nil {
 		err = errors.New("http do response is nil")
-		elog.Error(ctx, "HttpClient.Do",
+		dlog.Error("log_desc", "HttpClient.Do",
 			"http_method", request.Method,
 			"request-url", request.URL.Scheme+"//"+request.URL.Host+request.URL.Path+request.URL.RawQuery,
 			"request-header", request.Header,
@@ -95,27 +92,10 @@ func (clt *HttpClient) Do(ctx context.Context, request *http.Request) (responseH
 	var respBodyStr string
 	if resp != nil && resp.Body != nil {
 		respBytes, e = ioutil.ReadAll(resp.Body)
-		if strings.Contains(strings.ToLower(resp.Header.Get("Content-Encoding")), "gzip") {
-			gzipr, e := gzip.NewReader(bytes.NewReader(respBytes))
-			defer gzipr.Close()
-			if e != nil {
-				err = errors.Wrap(e)
-				return
-			}
-			respBytesGzip, e := ioutil.ReadAll(gzipr)
-			if e != nil {
-				if e != io.EOF {
-					err = errors.Wrap(e)
-					return
-				}
-			}
-			respBodyStr = string(respBytesGzip)
-		} else {
-			respBodyStr = string(respBytes)
-		}
+		respBodyStr = string(respBytes)
 		if e != nil {
 			err = errors.Wrap(e)
-			elog.Error(ctx, "HttpClient.Do",
+			dlog.Error("log_desc", "HttpClient.Do",
 				"HttpMethod", request.Method,
 				"request-url", request.URL.Scheme+"//"+request.URL.Host+request.URL.Path+request.URL.RawQuery,
 				"request-header", request.Header,
@@ -127,20 +107,7 @@ func (clt *HttpClient) Do(ctx context.Context, request *http.Request) (responseH
 			return
 		}
 	}
-	if e != nil {
-		err = errors.Wrap(e)
-		elog.Error(ctx, "HttpClient.Do",
-			"HttpMethod", request.Method,
-			"request-url", request.URL.Scheme+"//"+request.URL.Host+request.URL.Path+request.URL.RawQuery,
-			"request-header", request.Header,
-			"request-body", reqBodyStr,
-			"response-header", respHeader,
-			"response-body", respBodyStr,
-			"time(ms)", dur,
-			"error", err)
-		return
-	}
-	elog.Info(ctx, "HttpClient.Do",
+	dlog.Info("log_desc", "HttpClient.Do",
 		"HttpMethod", request.Method,
 		"request-url", request.URL.Scheme+"//"+request.URL.Host+request.URL.Path+request.URL.RawQuery,
 		"request-header", request.Header,
