@@ -70,7 +70,7 @@ func (clt *HttpClient) Do(ctx context.Context, request *http.Request) (responseH
 		respBytes  []byte
 	)
 	if resp == nil {
-		err = errors.New("http do response is nil")
+		err = errors.Wrap(e, "http do response is nil")
 		dlog.Error("log_desc", "HttpClient.Do",
 			"http_method", request.Method,
 			"request-url", request.URL.Scheme+"//"+request.URL.Host+request.URL.Path+request.URL.RawQuery,
