@@ -73,7 +73,7 @@ func (clt *HttpClient) Do(ctx context.Context, request *http.Request) (responseH
 		err = errors.Wrap(e, "http do response is nil")
 		dlog.Error("log_desc", "HttpClient.Do",
 			"http_method", request.Method,
-			"request-url", request.URL.Scheme+"//"+request.URL.Host+request.URL.Path+request.URL.RawQuery,
+			"request-url", request.URL.Scheme+"://"+request.URL.Host+request.URL.Path+request.URL.RawQuery,
 			"request-header", request.Header,
 			"request-body", reqBodyStr,
 			"response-header", "",
@@ -97,7 +97,7 @@ func (clt *HttpClient) Do(ctx context.Context, request *http.Request) (responseH
 			err = errors.Wrap(e)
 			dlog.Error("log_desc", "HttpClient.Do",
 				"HttpMethod", request.Method,
-				"request-url", request.URL.Scheme+"//"+request.URL.Host+request.URL.Path+request.URL.RawQuery,
+				"request-url", request.URL.Scheme+"://"+request.URL.Host+request.URL.Path+request.URL.RawQuery,
 				"request-header", request.Header,
 				"request-body", reqBodyStr,
 				"response-header", respHeader,
